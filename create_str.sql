@@ -1,6 +1,5 @@
 -- Получаем максимальный product_id
 SELECT COALESCE(MAX(product_id), 0) + 1 AS new_product_id FROM source3.craft_market_orders;
--- Затем используйте это значение в вашем INSERT запросе
 INSERT INTO source3.craft_market_orders (
     product_id,
     craftsman_id,
