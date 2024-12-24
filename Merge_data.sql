@@ -33,7 +33,7 @@ WITH UniqueProducts_craftsmans AS (
         craftsman_name,
         craftsman_address,
         craftsman_birthday,
-        craftsman_email, 
+        craftsman_email, -- или MAX(product_price) в зависимости от ваших требований
         NOW() AS load_dttm
     FROM
         source1.craft_market_wide
@@ -117,7 +117,7 @@ WITH UniqueProducts_customers AS (
         customer_name,
         customer_address,
         customer_birthday,
-        customer_email, 
+        customer_email, -- или MAX(product_price) в зависимости от ваших требований
         NOW() AS load_dttm
     FROM
         source1.craft_market_wide
@@ -200,7 +200,9 @@ WITH UniqueProducts AS (
         product_type,
         product_price, 
         NOW() AS load_dttm,
-        1 AS product_source  -- источник 1
+        1 AS product_source,  -- источник 1
+        craftsman_id
+        
     FROM
         source1.craft_market_wide
 )
@@ -212,13 +214,15 @@ USING (
         o.product_description,
         o.product_type,
         o.product_price, 
-        NOW() AS load_dttm
+        NOW() AS load_dttm,
+        o.craftsman_id
     FROM
         UniqueProducts o
 ) AS source
 ON (
     target.product_source = source.product_source and  target.product_name = source.product_name
     and target.product_description = source.product_description and target.product_type = source.product_type
+    and target.product_craftsmans = source.craftsman_id
 )
 WHEN MATCHED THEN
     UPDATE SET
@@ -226,22 +230,8 @@ WHEN MATCHED THEN
             WHEN target.product_price <> source.product_price THEN source.product_price 
             ELSE target.product_price 
         END,
-        product_name = CASE 
-            WHEN target.product_name <> source.product_name THEN source.product_name 
-            ELSE target.product_name 
-        END,
-        product_description = CASE 
-            WHEN target.product_description <> source.product_description THEN source.product_description 
-            ELSE target.product_description 
-        END,
-        product_type = CASE 
-            WHEN target.product_type <> source.product_type THEN source.product_type 
-            ELSE target.product_type 
-        END,
         load_dttm = CASE 
-            WHEN target.product_type <> source.product_type OR 
-                 target.product_description <> source.product_description or 
-                 target.product_name <> source.product_name or 
+            WHEN 
                  target.product_price <> source.product_price
                  THEN NOW() 
             ELSE target.load_dttm 
@@ -253,7 +243,8 @@ WHEN NOT MATCHED THEN
         product_description,
         product_type,
         product_price,
-        load_dttm
+        load_dttm,
+        product_craftsmans
     )
     VALUES (
     source.product_source,
@@ -261,12 +252,12 @@ WHEN NOT MATCHED THEN
         source.product_description,
         source.product_type,
         source.product_price,
-        source.load_dttm
+        source.load_dttm,
+        source.craftsman_id
+        
     );
    
    
- ------------------------------------------------------------------------------------------  
-------------------------------------------------------------------------------------------
 
 
 
