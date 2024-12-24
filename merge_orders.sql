@@ -14,7 +14,9 @@ WITH UniqueProducts_orders AS (
     JOIN
         source3.craft_market_customers cu ON o.customer_id = cu.customer_id
     JOIN
-        dwh.d_products p ON o.product_name = p.product_name and o.product_price = p.product_price and o.product_description = p.product_description and  o.product_price = p.product_price
+        dwh.d_products p ON o.product_name = p.product_name and o.product_price = p.product_price 
+        and o.product_description = p.product_description and  o.product_price = p.product_price
+        and 3 = p.product_source and o.craftsman_id = p.product_craftsmans
     JOIN
         dwh.d_craftsmans c_dwh ON c.craftsman_name = c_dwh.craftsman_name and c.craftsman_birthday = c_dwh.craftsman_birthday 
         and c.craftsman_address = c_dwh.craftsman_address and c.craftsman_email = c_dwh.craftsman_email
@@ -39,6 +41,7 @@ WITH UniqueProducts_orders AS (
     JOIN
         dwh.d_products p ON c.product_name = p.product_name and c.product_price = p.product_price 
         and c.product_description = p.product_description and  c.product_price = p.product_price
+        and 2 = p.product_source and o.craftsman_id = p.product_craftsmans
     JOIN
         dwh.d_craftsmans c_dwh ON c.craftsman_name = c_dwh.craftsman_name and c.craftsman_birthday = c_dwh.craftsman_birthday 
         and c.craftsman_address = c_dwh.craftsman_address and c.craftsman_email = c_dwh.craftsman_email
@@ -61,6 +64,7 @@ WITH UniqueProducts_orders AS (
     JOIN
         dwh.d_products p ON o.product_name = p.product_name and o.product_price = p.product_price 
         and o.product_description = p.product_description and  o.product_price = p.product_price
+        and 1 = p.product_source and o.craftsman_id = p.product_craftsmans
     JOIN
         dwh.d_craftsmans c_dwh ON o.craftsman_name = c_dwh.craftsman_name and o.craftsman_birthday = c_dwh.craftsman_birthday 
         and o.craftsman_address = c_dwh.craftsman_address and o.craftsman_email = c_dwh.craftsman_email
@@ -112,3 +116,4 @@ WHEN NOT MATCHED THEN
    
   -----------------------------------------------------------------------------------------------------------------------  
    ------------------------------------------------------------------------------------------------------------------
+----------
