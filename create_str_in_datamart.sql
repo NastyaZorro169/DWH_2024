@@ -33,9 +33,7 @@ USING (
     JOIN
         dwh.d_customers cu ON o.customer_id = cu.customer_id
     JOIN
-        dwh.d_products p ON o.product_id = p.product_id   -- Соединяем с таблицей продуктов для получения цены продукта
-    WHERE
-        o.load_dttm > (SELECT COALESCE(MAX(load_dttm), '1900-01-01') FROM dwh.load_dates_craftsman_report_datamart)
+        dwh.d_products p ON o.product_id = p.product_id    
     GROUP BY
         c.craftsman_id, 
         c.craftsman_name, 
